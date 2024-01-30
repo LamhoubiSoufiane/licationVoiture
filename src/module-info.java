@@ -1,9 +1,4 @@
-/**
- * 
- */
-/**
- * 
- */
-module TP6 {
+
+module licationVoiture {
 	requires java.desktop;
 }

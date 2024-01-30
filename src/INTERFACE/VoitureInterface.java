@@ -443,12 +443,17 @@ public class VoitureInterface extends JPanel {
 				throw new ClientLoueurExc2("Le client loue deja une voiture!!");
 			try {
 				Home2.monagence.LoueVoiture(C, V);
-				JOptionPane.showMessageDialog(null, "Voiture : " + V + " est louée avec succés ");
+			
 				Object[] obj = { V.get_Marque(), V.get_Modele(), V.get_Annee_Production(), V.get_Prix_Loc(),
 						C.get_Nom(), C.get_Prenom(), C.get_CIN(), C.get_Civilite() };
 				LocationInterface._LTableModel.addRow(obj);
-				comboBox.setSelectedItem("Tous");
+				if(IterFiltre != null)
+				{
+						comboBox.setSelectedItem("Tous");
 				appliquerFiltre();
+				}
+			
+				JOptionPane.showMessageDialog(null, "Voiture : " + V + " est louée avec succés ");
 			} catch (VoitureExisteExc e) {
 				JOptionPane.showMessageDialog(null, e.getMessage());
 			} catch (VoitureLouee e) {
