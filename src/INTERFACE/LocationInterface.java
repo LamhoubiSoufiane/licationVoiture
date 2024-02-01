@@ -5,6 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,6 +28,7 @@ public class LocationInterface extends JPanel {
 	Iterator<Voiture> IT;
 	JTable _LTable;
 	static DefaultTableModel _LTableModel;
+	static Map<String, Client> clients = new TreeMap<>();
 
 	LocationInterface(Agence ag) {
 		super();
@@ -56,18 +60,30 @@ public class LocationInterface extends JPanel {
 
 		Clients = Home2.monagence.LesClientsLoueur();
 		while (Clients.hasNext()) {
-			comboBox.addItem((String) Clients.next().get_CIN());
+			Client C = (Client) Clients.next();
+			clients.put(C.toString(), C);
+			comboBox.addItem((String) C.toString());
 		}
 
 		updateComboBox();
 
 		RendreVoit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!comboBox.getSelectedItem().equals("Rien")) {
-					String c = (String) comboBox.getSelectedItem();
-					Client cl = Home2.monagence.Chercher_Client_Loueur(c);
-					Home2.monagence.rendVoiture(cl);
-					JOptionPane.showMessageDialog(null, "Le client" + cl.get_Nom() + "a rendu la voiture");
+				Iterator<String> iterCleints;
+				Client c = null;
+				if (!comboBox.getSelectedItem().equals("Tous")) {
+					String selectedClient = (String) comboBox.getSelectedItem();
+					Set<String> keys2 = clients.keySet();
+					iterCleints = keys2.iterator();
+					while (iterCleints.hasNext()) {
+						String str = (String) iterCleints.next();
+						if (str.equals(selectedClient)) {
+							c = (Client) clients.get(str);
+							break;
+						}
+					}
+					Home2.monagence.rendVoiture(c);
+					JOptionPane.showMessageDialog(null, "Le client" + c.get_Nom() + "a rendu la voiture");
 
 					updateComboBox();
 				}
@@ -83,7 +99,7 @@ public class LocationInterface extends JPanel {
 
 		Clients = Home2.monagence.LesClientsLoueur();
 		while (Clients.hasNext()) {
-			comboBox.addItem((String) Clients.next().get_CIN());
+			comboBox.addItem((String) Clients.next().toString());
 		}
 	}
 
