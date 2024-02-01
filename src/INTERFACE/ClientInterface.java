@@ -2,9 +2,12 @@ package INTERFACE;
 
 import Classes.*;
 
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +22,7 @@ public class ClientInterface extends JPanel {
 	Agence monagence;
 	JTable _CTable;
 	static DefaultTableModel _CTableModel;
-	JButton btnAjouter, btnSupprimer, btnModifier;
+	JButton btnAjouter, btnSupprimer;
 	Iterator<Client> IT;
 
 	ClientInterface(Agence ag) {
@@ -41,18 +44,20 @@ public class ClientInterface extends JPanel {
 			_CTableModel.addRow(obj);
 		}
 		_CTable = new JTable(_CTableModel);
-		add(_CTable, BorderLayout.NORTH);
+		//add(_CTable, BorderLayout.NORTH);
+		add(new JScrollPane(_CTable), BorderLayout.NORTH);
+		_CTable.setDefaultRenderer(Object.class, new Personnaliser_Lignes());
 
 		this.add(_Cpanel);
 
 		JPanel boutonsPanel = new JPanel();
 		btnAjouter = new JButton("Ajouter");
 		btnSupprimer = new JButton("Supprimer");
-		btnModifier = new JButton("Modifier");
+
 
 		boutonsPanel.add(btnAjouter);
 		boutonsPanel.add(btnSupprimer);
-		boutonsPanel.add(btnModifier);
+	
 		this.add(boutonsPanel);
 		btnAjouter.addActionListener(new ActionListener() {
 
@@ -83,6 +88,39 @@ public class ClientInterface extends JPanel {
 		});
 	}
 
+	private class Personnaliser_Lignes extends DefaultTableCellRenderer {
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+					column);
+
+			Voiture V;
+			String mq, mod,ann, cv;
+			mq = (String) _CTableModel.getValueAt(row, 0);
+			mod = (String) _CTableModel.getValueAt(row, 1);
+			ann = (String) _CTableModel.getValueAt(row, 2);
+			cv = (String) _CTableModel.getValueAt(row, 3);
+			Civilite civilite;
+			if (cv.equals("M."))
+				civilite = Civilite.PREMIER;
+			else if (cv.equals("Mlle"))
+				civilite = Civilite.DEUXIEME;
+			else
+				civilite = Civilite.TROISIEME;
+			Client C= new Client(mq,mod,ann,civilite);
+			if (Home2.monagence.estLoueur(C)) {
+				cellComponent.setBackground(Color.orange); // Changer la couleur de fond de la ligne
+				cellComponent.setForeground(Color.BLACK);
+			} else {
+
+				cellComponent.setBackground(Color.green);
+				cellComponent.setForeground(Color.BLACK);
+			}
+
+			return cellComponent;
+		}
+	}
 	private static void afficherBoiteDialogue(JFrame parentFrame) throws ClientLoueurExc2 {
 		JPanel panel = new JPanel(new GridLayout(4, 3));
 		JLabel labelNom = new JLabel("Nom : ");
